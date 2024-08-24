@@ -1,0 +1,10 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# vscode configuration files
+.vscode/
+
+# test files / folders
+test_project/
+*.zip
