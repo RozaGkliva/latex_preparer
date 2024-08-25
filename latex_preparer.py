@@ -1,5 +1,47 @@
 #!/usr/bin/python3
-# setup the script arguments
+
+# Copyright 2024 Roza Gkliva
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+Module Name: latex_preparer.py
+Author: Roza Gkliva
+Date: 2024-08-24
+
+Description:
+    This script is used to prepare a latex project for compilation. It copies the figures and bib files to new directories specified by the user
+
+Usage:
+    ./latex_preparer.py [options]
+
+Options:
+    -h, --help: Show this help message and exit
+    --main_tex: The main tex file
+    --project_path: The path to the latex project
+    --figures_folder: The new figures directory
+    --bib_folder: The new bib directory
+
+Example:
+    ./latex_preparer.py --main_tex main.tex --project_path /path/to/latex_project --figures_folder figures --bib_folder bib
+
+# TODO when searching for the list of figures exclude the ones in commented out lines
+# TODO remember! same as above for the bib files
+# TODO check if multiple bib files
+# TODO check if figures are under directories
+# TODO tex file does not need to be the main tex file. It can be any tex file that is in the project. Maybe the script should scan all tex files that are used
+"""
+
 import argparse
 import os
 import re
@@ -57,7 +99,7 @@ def find_used_figures():
 
             pattern = r'\\includegraphics\[[^\]]*\]\{([^}]+)\}'
             match = re.search(pattern, line)
-            # TODO exclude commented out lines
+            
             if match:
                 # if match is found, check if the figure is in a directory and remove the directory
                 figure_path = match.group(1)
