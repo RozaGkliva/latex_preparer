@@ -8,8 +8,8 @@ run with:
 ```
 
 # Roadmap
-- [ ] when searching for the list of figures exclude the ones in commented out lines
+- [x] when searching for the list of figures exclude the ones in commented out lines
 - [ ] remember! same as above for the bib files
 - [ ] check if multiple bib files
-- [ ] check if figures are under directories
+- [x] check if figures are under directories
 - [ ] tex file does not need to be the main tex file. It can be any tex file that is in the project. Maybe the script should scan all tex files that are used

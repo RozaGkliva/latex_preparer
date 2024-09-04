@@ -79,7 +79,6 @@ def get_directory_paths():
 def find_used_figures():
     # go into the .tex file and find the figures that are used
     main_tex = args.main_tex
-    # print(main_tex)
 
     # create path to the main tex file
     main_tex_path = os.path.join(args.project_path, main_tex)
@@ -88,9 +87,10 @@ def find_used_figures():
         sys.exit(1)
 
     which_figures = []
+    dir_paths = []
+
     with open(main_tex_path, 'r') as file:
         for line in file:
-            # print(line)
 
             pattern = r'\\includegraphics\[[^\]]*\]\{([^}]+)\}'
             match = re.search(pattern, line)
@@ -101,43 +101,54 @@ def find_used_figures():
 
                 # if match is found, check if the figure is in a directory and remove the directory
                 figure_path = match.group(1)
-                figure_name = figure_path.split("/")[-1]
-                # print(figure_name)
 
-                # print(match.group(1))
+                # check if figure is in nested directory and save the path
+                path_parts = figure_path.split("/")
+                if len(path_parts) > 1:
+                    dir_path = "/".join(path_parts[:-1])
+                                
+                figure_name = figure_path.split("/")[-1]
+
+                dir_paths.append(dir_path)
                 which_figures.append(figure_name)
 
-    return which_figures
+    return which_figures, dir_paths
 
     
-def copy_figures_to_new_folder(figures_list, figures_dir):
+def copy_figures_to_new_folder(figures_list, figures_dir_list):
 
-    target_directory = os.path.join(args.project_path, args.figures_folder)
-    source_directory = os.path.join(args.project_path, figures_dir)
-    # print(f"target directory: {target_directory}")
-    # print(f"source directory: {source_directory}")
-
-    if not os.path.exists(target_directory):
-        os.makedirs(target_directory)
+    new_directory = os.path.join(args.project_path, args.figures_folder)
     
     for figure in figures_list:
+        print(f"----------------")
+
+        print(f"which figure: {figure}")
+        target_directory = os.path.join(new_directory, figures_dir_list[figures_list.index(figure)])
+        
+        # create the target directory if it does not exist
+        if not os.path.exists(target_directory):
+            os.makedirs(target_directory)
+
         target_path = os.path.join(target_directory, figure)
+        print(f"target path: {target_path}")
+
+        source_directory = os.path.join(args.project_path, figures_dir_list[figures_list.index(figure)])
+        print(f"source directory: {source_directory}")
+
         source_path = os.path.join(source_directory, figure)
         
-        # print(f"source: {source_path}")
         if os.path.exists(target_path):
-            print(f"The figure {figure} already exists in the figures directory: {target_path}")
+            pass
+            # print(f"The figure {figure} already exists in the figures directory: {target_path}")
         else:
-            print(f"The figure {figure} does not exist in the figures directory: {target_path}")
+            # print(f"The figure {figure} does not exist in the figures directory: {target_path}")
 
             print(f"copying: {source_path} to {target_path}")
             os.system(f"cp {source_path} {target_path}")
 
 
 [figures_dir, bibs_dir] =  get_directory_paths()
-figures_list = find_used_figures()
-# print(figures_list)
+[figures_list, directories] = find_used_figures()
 
-copy_figures_to_new_folder(figures_list, figures_dir)
-# print(figures)
-# print(bibs)
+# copy_figures_to_new_folder(figures_list, figures_dir)
+copy_figures_to_new_folder(figures_list, directories)
