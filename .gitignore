@@ -6,5 +6,5 @@ __pycache__/
 .vscode/
 
 # test files / folders
-test_project/
+test_project*/
 *.zip

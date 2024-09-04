@@ -29,11 +29,10 @@ Options:
     -h, --help: Show this help message and exit
     --main_tex: The main tex file
     --project_path: The path to the latex project
-    --figures_folder: The new figures directory
-    --bib_folder: The new bib directory
+    --new_folder: The new figures directory
 
 Example:
-    ./latex_preparer.py --main_tex main.tex --project_path /path/to/latex_project --figures_folder figures --bib_folder bib
+    ./latex_preparer.py --main_tex main.tex --project_path /path/to/latex_project --new_folder test_folder 
 
 """
 
@@ -45,8 +44,7 @@ import sys
 parser = argparse.ArgumentParser(description='Prepare the latex project for compilation')
 parser.add_argument('--main_tex', type=str, help='The main tex file')
 parser.add_argument('--project_path', type=str, help='The path to the latex project')
-parser.add_argument('--figures_folder', type=str, help='The new figures directory')
-parser.add_argument('--bib_folder', type=str, help='The new bib directory')
+parser.add_argument('--new_folder', type=str, help='The new directory')
 args = parser.parse_args()
 
 
@@ -57,19 +55,20 @@ def get_directory_paths():
 
     latex_project_directory = args.project_path
 
-    
-
     for item in os.listdir(latex_project_directory):
+        
         # find the directories that contain figures and bib files
         if os.path.isdir(os.path.join(latex_project_directory, item)):
-            
             # go in the directories and check if image files or bibfiles are there
-            for file in os.listdir(os.path.join(latex_project_directory, item)):
-                for extension in figures_extensions:
-                    if file.endswith(extension):
-                        figures_directory = os.path.join(latex_project_directory, item)
-                if file.endswith(".bib"):
-                    bib_directory = os.path.join(latex_project_directory, item)
+            for root, dirs, files in os.walk(os.path.join(latex_project_directory, item)):
+                for file in files:
+                    for extension in figures_extensions:
+                        if file.endswith(extension):
+                            figures_directory = os.path.join(latex_project_directory, item)
+                            print(f"figures: {figures_directory}")
+                    if file.endswith(".bib"):
+                        bib_directory = os.path.join(latex_project_directory, item)
+            # print(f"figures: {figures_directory}, bib: {bib_directory}")
 
 
     # print(f"figures: {figures_directory}")
@@ -117,7 +116,7 @@ def find_used_figures():
     
 def copy_figures_to_new_folder(figures_list, figures_dir_list):
 
-    new_directory = os.path.join(args.project_path, args.figures_folder)
+    new_directory = os.path.join(args.project_path, args.new_folder)
     
     for figure in figures_list:
         print(f"----------------")
