@@ -35,11 +35,6 @@ Options:
 Example:
     ./latex_preparer.py --main_tex main.tex --project_path /path/to/latex_project --figures_folder figures --bib_folder bib
 
-# TODO when searching for the list of figures exclude the ones in commented out lines
-# TODO remember! same as above for the bib files
-# TODO check if multiple bib files
-# TODO check if figures are under directories
-# TODO tex file does not need to be the main tex file. It can be any tex file that is in the project. Maybe the script should scan all tex files that are used
 """
 
 import argparse
