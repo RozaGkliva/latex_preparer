@@ -96,6 +96,9 @@ def find_used_figures():
             match = re.search(pattern, line)
             
             if match:
+                if line.startswith("%"): # if the matched line is commented out, skip it
+                    continue
+
                 # if match is found, check if the figure is in a directory and remove the directory
                 figure_path = match.group(1)
                 figure_name = figure_path.split("/")[-1]
