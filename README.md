@@ -12,4 +12,4 @@ run with:
 - [ ] remember! same as above for the bib files
 - [ ] check if multiple bib files
 - [x] check if figures are under directories
-- [ ] tex file does not need to be the main tex file. It can be any tex file that is in the project. Maybe the script should scan all tex files that are used
+- [ ] tex file does not need to be the main tex file. It can be any tex file that is in the project. Maybe the script should scan all tex files that are used. Did this but the problem is that if a .tex file is not used it's still scanned. A better solution would be to find the main file and then scan all the tex files that are included from there.

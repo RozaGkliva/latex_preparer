@@ -42,7 +42,7 @@ import re
 import sys
 
 parser = argparse.ArgumentParser(description='Prepare the latex project for compilation')
-parser.add_argument('--main_tex', type=str, help='The main tex file')
+# parser.add_argument('--main_tex', type=str, help='The main tex file')
 parser.add_argument('--project_path', type=str, help='The path to the latex project')
 parser.add_argument('--new_folder', type=str, help='The new directory')
 args = parser.parse_args()
@@ -52,6 +52,11 @@ args = parser.parse_args()
 figures_extensions = [".png", ".jpg", ".jpeg", ".pdf", ".eps"]
 
 def get_directory_paths():
+    """ finds where image files are located and where the bib files are located 
+        returns the paths
+    """
+
+    bib_directory = None
 
     latex_project_directory = args.project_path
 
@@ -65,51 +70,61 @@ def get_directory_paths():
                     for extension in figures_extensions:
                         if file.endswith(extension):
                             figures_directory = os.path.join(latex_project_directory, item)
-                            print(f"figures: {figures_directory}")
+                            # print(f"figures: {figures_directory}")
                     if file.endswith(".bib"):
                         bib_directory = os.path.join(latex_project_directory, item)
-            # print(f"figures: {figures_directory}, bib: {bib_directory}")
+                # print(f"figures: {figures_directory}, bib: {bib_directory}")
 
-
-    # print(f"figures: {figures_directory}")
-    # print(f"bib: {bib_directory}")
     return figures_directory, bib_directory
 
 def find_used_figures():
-    # go into the .tex file and find the figures that are used
-    main_tex = args.main_tex
+    """ Scans the main tex file and finds which image files are used
+    
+    Returns:
+        which_figures: list of the figures that are used in the tex file
+        dir_paths: list of the directories that the figures are
+        """
 
-    # create path to the main tex file
-    main_tex_path = os.path.join(args.project_path, main_tex)
-    if not os.path.exists(main_tex_path):
-        print("The main tex file does not exist")
+    project_path = args.project_path
+    if not os.path.exists(project_path):
+        print("The project path does not exist")
         sys.exit(1)
 
     which_figures = []
     dir_paths = []
 
-    with open(main_tex_path, 'r') as file:
-        for line in file:
+    # scan through the project path and subdirectories to find all .tex files
+    for root, dirs, files in os.walk(project_path):
+        for file in files:
+            if file.endswith('.tex'):
+                tex_file_path = os.path.join(root, file)
+                print(f"Scanning tex file: {tex_file_path}")
+                
+                # open and scan each .tex file
+                with open(tex_file_path, 'r') as tex_file:
+                    for line in tex_file:
+                        pattern = r'\\includegraphics\[[^\]]*\]\{([^}]+)\}'
+                        match = re.search(pattern, line)
 
-            pattern = r'\\includegraphics\[[^\]]*\]\{([^}]+)\}'
-            match = re.search(pattern, line)
-            
-            if match:
-                if line.startswith("%"): # if the matched line is commented out, skip it
-                    continue
 
-                # if match is found, check if the figure is in a directory and remove the directory
-                figure_path = match.group(1)
+                        if match:
+                            if line.startswith("%"): # if the matched line is commented out, skip it
+                                continue
 
-                # check if figure is in nested directory and save the path
-                path_parts = figure_path.split("/")
-                if len(path_parts) > 1:
-                    dir_path = "/".join(path_parts[:-1])
-                                
-                figure_name = figure_path.split("/")[-1]
+                            print(f"match: {match.group(1)}")
 
-                dir_paths.append(dir_path)
-                which_figures.append(figure_name)
+                            # if match is found, check if the figure is in a directory and remove the directory
+                            figure_path = match.group(1)
+
+                            # check if figure is in nested directory and save the path
+                            path_parts = figure_path.split("/")
+                            if len(path_parts) > 1:
+                                dir_path = "/".join(path_parts[:-1])
+                                            
+                            figure_name = figure_path.split("/")[-1]
+
+                            dir_paths.append(dir_path)
+                            which_figures.append(figure_name)
 
     return which_figures, dir_paths
 
@@ -147,7 +162,11 @@ def copy_figures_to_new_folder(figures_list, figures_dir_list):
 
 
 [figures_dir, bibs_dir] =  get_directory_paths()
+print(f"main figures directory: {figures_dir}")
 [figures_list, directories] = find_used_figures()
 
+print(f"figures list: {figures_list}")
+print(f"directories: {directories}")
+
 # copy_figures_to_new_folder(figures_list, figures_dir)
-copy_figures_to_new_folder(figures_list, directories)
+# copy_figures_to_new_folder(figures_list, directories)
